@@ -39,6 +39,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conn->close();
 }
 ?>
-<a href="view.php">View Album List</a> | <a href="firstpage.php">Search Another</a>
+<a href="view.php">View Album List</a> | <a href="firstpage.php">Search Another</a> \| <a href="modify.php">Modify Album</a> | <a href="delete.php">Delete Album</a>
 </body>
 </html>
