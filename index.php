@@ -49,22 +49,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['scan_barcode'])) {
         $release = json_decode($releaseResponse, true);
 
         echo "<h2>Album Details</h2>";
-        echo "<p><strong>Band Name:</strong> " . htmlspecialchars($release['artists'][0]['name'] ?? 'Unknown') . "</p>";
-        echo "<p><strong>Album Name:</strong> " . htmlspecialchars($release['title'] ?? 'Unknown') . "</p>";
-        echo "<p><strong>Album Year:</strong> " . htmlspecialchars($release['year'] ?? 'Unknown') . "</p>";
+        echo "<p><strong>Band Name:</strong> " . $release['artists'][0]['name'] ?? 'Unknown' . "</p>";
+        echo "<p><strong>Album Name:</strong> " . $release['title'] ?? 'Unknown'. "</p>";
+        echo "<p><strong>Album Year:</strong> " . $release['year'] ?? 'Unknown'. "</p>";
 
         if (!empty($release['images'][0]['resource_url'])) {
-            echo "<img src='" . htmlspecialchars($release['images'][0]['resource_url']) . "' alt='Album Cover' style='max-width:200px;'>";
+            echo "<img src='" . $release['images'][0]['resource_url'] . "' alt='Album Cover' style='max-width:200px;'>";
         }
 
     } else {
         echo "<p>No results found for barcode: " . htmlspecialchars($_POST['barcode']) . "</p>";
     }
 
-    echo '<br><a href="firstpage.php">Search Another album</a>';
+    // echo '<br><a href="firstpage.php">Search Another album</a>|  <a href ="add.php"> Add Item</a> | <a href ="view.php"> View Grocery List</a> <br />';
+    }
     
-}
+
 ?>
+ <form action="add.php" method="POST">
+        <input type="hidden" name="barcode" value="<?= htmlspecialchars($_POST['barcode']) ?>">
+        <input type="hidden" name="band_name" value="<?= htmlspecialchars($release['artists'][0]['name'] ?? '') ?>">
+        <input type="hidden" name="album_name" value="<?= htmlspecialchars($release['title'] ?? '') ?>">
+        <input type="hidden" name="album_year" value="<?= htmlspecialchars($release['year'] ?? '') ?>">
+        <input type="hidden" name="artwork_url" value="<?= htmlspecialchars($release['images'][0]['resource_url'] ?? '') ?>">
+        <input type="submit" value="Add to Album List">
+    </form>
 
     
 </body>
