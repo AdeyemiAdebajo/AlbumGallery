@@ -6,76 +6,114 @@
     <title>Album Result</title>
 </head>
 <body>
+
+<?php include 'welcome.php'; ?>
+
+
+
 <?php
- include 'welcome.php';
+// Initialize empty fallback variables
+$band = "";
+$title = "";
+$year = "";
+$barcodeInput = $_POST['barcode'] ?? "";
+$name_quarry = $_POST['name_quarry'] ?? "";
+$album_quarry = $_POST['album_quarry'] ?? "";
+$year_quarry = $_POST['year_quarry'] ?? "";
 
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['scan_barcode'])) {
-    $barcode = urlencode(trim($_POST['barcode']));
-    $apiKey = "fFcWCXQkYQAlkddXjWzIZXrFSTOFytYtovcNVlSE";
+// if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    // 1️⃣ Manual form request (clicked "Add Manually")
+    // if (isset($_POST['manual_add'])) {
+    //     echo "<h3>Manual Album Entry</h3>";
+    //     echo "
+    //     <form action='add.php' method='POST'>
+    //         <input type='hidden' name='barcode' value='" . htmlspecialchars($barcodeInput) . "'>
+    //         Band Name: <input type='text' name='band_name' required><br><br>
+    //         Album Name: <input type='text' name='album_name' required><br><br>
+    //         Album Year: <input type='number' name='album_year'><br><br>
+    //        <input type='hidden' name='artwork_url'><br><br>
+    //         <input type='submit' value='Add Album'>
+    //         <button type='submit' name='scan_barcode'>Search and Add Album</button>
+    //     </form>";
+    // }
 
-    // First API Call: Search by Barcode
-    $searchUrl = "https://api.discogs.com/database/search?q=$barcode&token=$apiKey";
-
-    $curl = curl_init();
-    curl_setopt($curl, CURLOPT_URL, $searchUrl);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($curl, CURLOPT_HTTPHEADER, [
-        "User-Agent: MyDiscogsApp/1.0"
-    ]);
-
-    $response = curl_exec($curl);
-    curl_close($curl);
-    $data = json_decode($response, true);
+    // 2️⃣ Scanning Barcode
+    if ($_SERVER["REQUEST_METHOD"] === "POST") {
+        $searchQuery = '';
+        $apiKey = "fFcWCXQkYQAlkddXjWzIZXrFSTOFytYtovcNVlSE";
     
-
-    
-
-    if (!empty($data['results'])) {
-        $releaseId = $data['results'][0]['id'];
-
-        // Second API Call: Get Release Details
-        $releaseUrl = "https://api.discogs.com/releases/$releaseId";
-
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $releaseUrl);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, [
-            "Authorization: Discogs token=$apiKey",
-            "User-Agent: MyDiscogsApp/1.0"
-        ]);
-
-        $releaseResponse = curl_exec($curl);
-        curl_close($curl);
-        $release = json_decode($releaseResponse, true);
-
-        echo "<h2>Album Details</h2>";
-        echo "<p><strong>Band Name:</strong> " . $release['artists'][0]['name'] ?? 'Unknown' . "</p>";
-        echo "<p><strong>Album Name:</strong> " . $release['title'] ?? 'Unknown'. "</p>";
-        echo "<p><strong>Album Year:</strong> " . $release['year'] ?? 'Unknown'. "</p>";
-
-        if (!empty($release['images'][0]['resource_url'])) {
-            echo "<img src='" . $release['images'][0]['resource_url'] . "' alt='Album Cover' style='max-width:200px;'>";
+        if (isset($_POST['scan_barcode']) && !empty($barcodeInput)) {
+            $searchQuery = urlencode(trim($barcodeInput));
+        } elseif (isset($_POST['manual_search']) && !empty($name_quarry )&& !empty($album_quarry)&& !empty($year_quarry)) {
+            $searchQueryRaw = trim($name_quarry) . " " . trim($album_quarry) . " " . trim($year_quarry);
+            $searchQuery = urlencode($searchQueryRaw);
+            
         }
-
-    } else {
-        echo "<p>No results found for barcode: " . htmlspecialchars($_POST['barcode']) . "</p>";
-    }
-
-    // echo '<br><a href="firstpage.php">Search Another album</a>|  <a href ="add.php"> Add Item</a> | <a href ="view.php"> View Grocery List</a> <br />';
-    }
     
-
+        if (!empty($searchQuery)) {
+            $searchUrl = "https://api.discogs.com/database/search?q=$searchQuery&token=$apiKey";
+    
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_URL, $searchUrl);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_HTTPHEADER, ["User-Agent: MyDiscogsApp/1.0"]);
+            $response = curl_exec($curl);
+            curl_close($curl);
+    
+            $data = json_decode($response, true);
+    
+            if (!empty($data['results'])) {
+                $releaseId = $data['results'][0]['id'];
+    
+                $releaseUrl = "https://api.discogs.com/releases/$releaseId";
+                $curl = curl_init();
+                curl_setopt($curl, CURLOPT_URL, $releaseUrl);
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($curl, CURLOPT_HTTPHEADER, [
+                    "Authorization: Discogs token=$apiKey",
+                    "User-Agent: MyDiscogsApp/1.0"
+                ]);
+                $releaseResponse = curl_exec($curl);
+                curl_close($curl);
+                $release = json_decode($releaseResponse, true);
+    
+                $band = $release['artists'][0]['name'] ?? '';
+                $title = $release['title'] ?? '';
+                $year = $release['year'] ?? '';
+                $image = $release['images'][0]['resource_url'] ?? '';
+    
+                echo "<h3>Album Found</h3>";
+                echo "<p><strong>Band:</strong> " . htmlspecialchars($band) . "</p>";
+                echo "<p><strong>Album:</strong> " . htmlspecialchars($title) . "</p>";
+                echo "<p><strong>Year:</strong> " . htmlspecialchars($year) . "</p>";
+                if ($image) {
+                    echo "<img src='" . htmlspecialchars($image) . "' alt='Album Cover' style='max-width:200px;'><br>";
+                }
+    
+                echo "
+                <form action='add.php' method='POST'>
+                    <input type='hidden' name='barcode' value='" . htmlspecialchars($barcodeInput) . "'>
+                    <input type='hidden' name='band_name' value='" . htmlspecialchars($band) . "'>
+                    <input type='hidden' name='album_name' value='" . htmlspecialchars($title) . "'>
+                    <input type='hidden' name='album_year' value='" . htmlspecialchars($year) . "'>
+                    <input type='hidden' name='artwork_url' value='" . htmlspecialchars($image) . "'>
+                    <input type='submit' value='Add to Album List'>
+                </form>";
+            } else {
+                echo "<h3>No album found for that search.</h3>";
+                echo "
+                <form action='add.php' method='POST'>
+                    <input type='hidden' name='barcode' value='" . htmlspecialchars($barcodeInput) . "'>
+                    Band Name: <input type='text' name='band_name' required><br><br>
+                    Album Name: <input type='text' name='album_name' required><br><br>
+                    Album Year: <input type='number' name='album_year'><br><br>
+                    <input type='submit' value='Add Album Manually'>
+                </form>";
+            }
+        }
+    }
 ?>
- <form action="add.php" method="POST">
-        <input type="hidden" name="barcode" value="<?= htmlspecialchars($_POST['barcode']) ?>">
-        <input type="hidden" name="band_name" value="<?= htmlspecialchars($release['artists'][0]['name'] ?? '') ?>">
-        <input type="hidden" name="album_name" value="<?= htmlspecialchars($release['title'] ?? '') ?>">
-        <input type="hidden" name="album_year" value="<?= htmlspecialchars($release['year'] ?? '') ?>">
-        <input type="hidden" name="artwork_url" value="<?= htmlspecialchars($release['images'][0]['resource_url'] ?? '') ?>">
-        <input type="submit" value="Add to Album List">
-    </form>
 
-    
 </body>
 </html>

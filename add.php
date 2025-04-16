@@ -12,6 +12,7 @@ $username = "root";
 $password = "";
 $dbname = "grocerylist";
 $table = "albums";
+include("welcome.php");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $barcode = htmlspecialchars($_POST['barcode']);
@@ -31,7 +32,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             VALUES ('$barcode', '$band_name', '$album_name', '$album_year', '$artwork_url', '$created_at', '$updated_at')";
 
     if ($conn->query($sql) === TRUE) {
-        echo "<p><strong>$album_name</strong> has been added to your album list.</p>";
+        echo "<h3>Album Added</h3>";
+        echo "<p><strong>Band:</strong>".$band_name;
+        echo "<p><strong>Album:</strong>".$album_name;
+        echo "<p><strong>Year:</strong>".$album_year;
+        
+            
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
@@ -39,6 +45,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conn->close();
 }
 ?>
-<a href="view.php">View Album List</a> | <a href="firstpage.php">Search Another</a> \| <a href="modify.php">Modify Album</a> | <a href="delete.php">Delete Album</a>
+
 </body>
 </html>

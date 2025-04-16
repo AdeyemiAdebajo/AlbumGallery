@@ -20,8 +20,8 @@
         die("connection failed" . $conn->connect_error);
     }
     
-    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id'])) {
-        $id = $_POST['id'];
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_id'])) {
+        $id = $_POST['update_id'];
         $barcode = isset($_POST['barcode']) ? $_POST['barcode'] : '';
         $band_name = isset($_POST['band_name']) ? $_POST['band_name'] : '';
         $album_name = isset($_POST['album_name']) ? $_POST['album_name'] : '';
