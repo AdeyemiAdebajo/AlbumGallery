@@ -7,6 +7,7 @@
 </head>
 <body>
     <?php
+     include 'welcome.php';
     $servername = "localhost";
     $username = "root";
     $password = "";

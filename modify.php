@@ -9,6 +9,7 @@
 
 <body>
     <?php
+     include 'welcome.php';
     $servername = "localhost";
     $username = "root";
     $password = "";
@@ -32,7 +33,7 @@
     }
     $editId = $_POST['edit_id'] ?? null;
     $sql = "SELECT * FROM $table ORDER BY created_at DESC";
-    echo "click <a href='remove.php'>here </a>to Delete an ablum";
+    // echo "click <a href='remove.php'>here </a>to Delete an ablum";
     
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
