@@ -1,1 +1,1 @@
- <a href="firstpage.php">Add Album</a>  | <a href="modify.php">Modify Album</a> | <a href="remove.php">Delete Album</a>
+ <a href="firstpage.php">Add Album</a>  | <a href="modify.php">Modify Album</a> | <a href="remove.php">Delete Album</a>|<a href="albumGallery.php">View collections</a>
