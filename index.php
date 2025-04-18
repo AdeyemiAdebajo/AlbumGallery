@@ -12,7 +12,7 @@
 
 
 <?php
-// Initialize empty fallback variables
+
 $band = "";
 $title = "";
 $year = "";
@@ -22,23 +22,7 @@ $album_quarry = $_POST['album_quarry'] ?? "";
 $year_quarry = $_POST['year_quarry'] ?? "";
 
 
-// if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    // 1️⃣ Manual form request (clicked "Add Manually")
-    // if (isset($_POST['manual_add'])) {
-    //     echo "<h3>Manual Album Entry</h3>";
-    //     echo "
-    //     <form action='add.php' method='POST'>
-    //         <input type='hidden' name='barcode' value='" . htmlspecialchars($barcodeInput) . "'>
-    //         Band Name: <input type='text' name='band_name' required><br><br>
-    //         Album Name: <input type='text' name='album_name' required><br><br>
-    //         Album Year: <input type='number' name='album_year'><br><br>
-    //        <input type='hidden' name='artwork_url'><br><br>
-    //         <input type='submit' value='Add Album'>
-    //         <button type='submit' name='scan_barcode'>Search and Add Album</button>
-    //     </form>";
-    // }
 
-    // 2️⃣ Scanning Barcode
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $searchQuery = '';
         $apiKey = "fFcWCXQkYQAlkddXjWzIZXrFSTOFytYtovcNVlSE";
